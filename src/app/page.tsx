@@ -10,21 +10,23 @@ interface Todo {
 const todos = [] as Todo[];
 
 export default function Home({
-    searchParams: { error },
+    searchParams: { errors },
 }: {
-    searchParams: { error: string };
+    searchParams: { errors: string };
 }) {
     const addTodo = async (data: FormData) => {
         "use server";
         const title = data.get("title");
-        if (!title) redirect("/?error=No title provided");
+        if (!title) {
+            redirect("/?errors=Title is required");
+        }
         const newTodo = {
             id: todos.length + 1,
             title: title.toString(),
             done: false,
         };
         todos.push(newTodo);
-        revalidatePath("/");
+        redirect("/");
     };
     const removeTodo = async (data: FormData) => {
         "use server";
@@ -76,7 +78,7 @@ export default function Home({
                     name="title"
                 />
                 <button type="submit">Add</button>
-                {error && <p className="error">{error}</p>}
+                {errors && <p className="error">{errors}</p>}
             </form>
         </main>
     );
